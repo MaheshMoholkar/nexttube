@@ -8,20 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
-import React, { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import React, { useTransition } from "react";
 
 function LoginForm() {
   const [githubPending, startGithubTransition] = useTransition();
-  const [emailPending, startEmailTransition] = useTransition();
-  const [email, setEmail] = useState("");
-  const router = useRouter();
 
   const handleGithubLogin = async () => {
     startGithubTransition(async () => {
@@ -40,77 +33,18 @@ function LoginForm() {
     });
   };
 
-  const handleLogin = async () => {
-    if (!email) {
-      toast.error("Email is required");
-      return;
-    }
-
-    startEmailTransition(async () => {
-      await authClient.emailOtp.sendVerificationOtp({
-        email: email,
-        type: "sign-in",
-        fetchOptions: {
-          onSuccess: () => {
-            toast.success("Verification code sent to your email");
-            router.push(`/verify-email?email=${email}`);
-          },
-          onError: (error) => {
-            toast.error(error.error.message);
-          },
-        },
-      });
-    });
-  };
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
+        <CardTitle className="text-xl font-bold text-center">
+          Sign in to NextTube
+        </CardTitle>
+        <CardDescription className="text-center">
+          Welcome Back! Please sign in to continue
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4">
-          <div className="grid gap-6">
-            <div className="grid gap-2">
-              <Label>Email</Label>
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="flex justify-between">
-              <div className="flex items-center gap-2">
-                <Checkbox id="remember" />
-                <Label htmlFor="remember">Remember me</Label>
-              </div>
-              <div className="flex text-sm gap-2">Forgot Password?</div>
-            </div>
-            <Button
-              className="w-full"
-              onClick={handleLogin}
-              disabled={emailPending}
-            >
-              {emailPending ? (
-                <>
-                  <Loader className="w-4 h-4 animate-spin" />
-                  <span>Loading...</span>
-                </>
-              ) : (
-                "Login"
-              )}
-            </Button>
-          </div>
-          <div className="relative items-center text-center after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-            <span className="relative z-10 text-sm bg-card px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
           <Button
             className="w-full"
             onClick={handleGithubLogin}

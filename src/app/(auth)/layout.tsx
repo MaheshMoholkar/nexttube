@@ -24,8 +24,14 @@ export default function AuthLayout({
           href="/"
           className="flex items-center justify-center gap-2 self-center font-medium"
         >
-          <Image src="/nexttube.svg" alt="logo" className="size-9" />
-          <span className="text-2xl font-bold">IGNITE+ LMS</span>
+          <Image
+            src="/nexttube.svg"
+            alt="logo"
+            className="size-9"
+            width={36}
+            height={36}
+          />
+          <span className="text-2xl font-bold">NextTube</span>
         </Link>
         <div className="flex w-full max-w-sm flex-col gap-6">{children}</div>
         <div className="text-sm text-balance text-center text-muted-foreground">
