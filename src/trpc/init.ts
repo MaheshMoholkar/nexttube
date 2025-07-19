@@ -1,15 +1,14 @@
-import { db } from "@/db";
-import { user } from "@/db/schema";
 import { auth } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 import { initTRPC, TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { cache } from "react";
 import superjson from "superjson";
+
 export const createTRPCContext = cache(async () => {
   const session = await auth.api.getSession({ headers: await headers() });
   return {
-    userId: session?.user.id,
+    user: session?.user,
   };
 });
 
@@ -23,27 +22,19 @@ const t = initTRPC.context<TRPCContext>().create({
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
+
 export const protectedProcedure = t.procedure.use(async (opts) => {
-  const userId = opts.ctx.userId;
+  const user = opts.ctx.user;
 
-  if (!userId) {
+  if (!user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  const [userData] = await db
-    .select()
-    .from(user)
-    .where(eq(user.id, userId))
-    .limit(1);
+  const { success } = await rateLimit.limit(user.id);
 
-  if (!userData) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+  if (!success) {
+    throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
   }
 
-  return opts.next({
-    ctx: {
-      ...opts.ctx,
-      user: userData,
-    },
-  });
+  return opts.next();
 });
