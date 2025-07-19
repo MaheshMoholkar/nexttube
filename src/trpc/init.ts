@@ -1,14 +1,12 @@
-import { auth } from "@/lib/auth";
-import { rateLimit } from "@/lib/rate-limit";
+// import { rateLimit } from "@/lib/rate-limit";
 import { initTRPC, TRPCError } from "@trpc/server";
-import { headers } from "next/headers";
 import { cache } from "react";
 import superjson from "superjson";
 
 export const createTRPCContext = cache(async () => {
-  const session = await auth.api.getSession({ headers: await headers() });
+  // const session = await auth.api.getSession({ headers: await headers() });
   return {
-    user: session?.user,
+    userId: "xTflubc1z0ZHsbnU1ZvFfsC66k0jkxlM",
   };
 });
 
@@ -24,17 +22,17 @@ export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
 
 export const protectedProcedure = t.procedure.use(async (opts) => {
-  const user = opts.ctx.user;
+  const userId = opts.ctx.userId;
 
-  if (!user) {
+  if (!userId) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  const { success } = await rateLimit.limit(user.id);
+  // const { success } = await rateLimit.limit(user.id);
 
-  if (!success) {
-    throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
-  }
+  // if (!success) {
+  //   throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+  // }
 
   return opts.next();
 });
