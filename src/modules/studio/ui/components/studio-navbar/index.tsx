@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import AuthButton from "@/modules/auth/ui/components/auth-button";
+import { StudioUploadModal } from "../studio-upload-modal";
 
 function StudioNavbar() {
   return (
@@ -29,6 +30,7 @@ function StudioNavbar() {
 
         {/* Auth Button */}
         <div className="flex-shrink-0 items-center flex gap-4">
+          <StudioUploadModal />
           <AuthButton />
         </div>
       </div>

@@ -13,10 +13,11 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
 
 function AuthButton() {
   const { data: session, isPending } = authClient.useSession();
-
+  const router = useRouter();
   if (isPending) {
     return null;
   }
@@ -75,7 +76,13 @@ function AuthButton() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={async () => {
-            await authClient.signOut();
+            await authClient.signOut({
+              fetchOptions: {
+                onSuccess: () => {
+                  router.push("/");
+                },
+              },
+            });
           }}
           variant="destructive"
         >
