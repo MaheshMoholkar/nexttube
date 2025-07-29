@@ -1,12 +1,14 @@
-// import { rateLimit } from "@/lib/rate-limit";
+import { auth } from "@/lib/auth";
+//import { rateLimit } from "@/lib/rate-limit";
+import { headers } from "next/headers";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { cache } from "react";
 import superjson from "superjson";
 
 export const createTRPCContext = cache(async () => {
-  // const session = await auth.api.getSession({ headers: await headers() });
+  const session = await auth.api.getSession({ headers: await headers() });
   return {
-    userId: "xTflubc1z0ZHsbnU1ZvFfsC66k0jkxlM",
+    userId: session?.user.id ?? "",
   };
 });
 
