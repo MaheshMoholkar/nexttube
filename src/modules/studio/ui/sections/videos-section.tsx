@@ -61,7 +61,12 @@ export const VideosSectionSuspense = () => {
                   onClick={() => router.push(`/studio/videos/${video.id}`)}
                 >
                   <TableCell>
-                    <VideoThumbnail thumbnail={video.muxThumbnail || ""} />
+                    <VideoThumbnail
+                      thumbnail={video.muxThumbnail}
+                      previewUrl={video.previewUrl}
+                      title={video.title}
+                      duration={video.duration || 0}
+                    />
                   </TableCell>
                   <TableCell>visibility</TableCell>
                   <TableCell>{video.muxStatus || "pending"}</TableCell>

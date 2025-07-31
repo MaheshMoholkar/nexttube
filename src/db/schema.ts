@@ -6,6 +6,7 @@ import {
   boolean,
   uniqueIndex,
   uuid,
+  integer,
 } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
@@ -99,6 +100,8 @@ export const videos = pgTable("videos", {
   muxTrackId: text("mux_track_id").unique(),
   muxTrackStatus: text("mux_track_status"),
   muxThumbnail: text("mux_thumbnail"),
+  previewUrl: text("preview_url"),
+  duration: integer("duration"),
   categoryId: uuid("category_id").references(() => categories.id, {
     onDelete: "set null",
   }),
