@@ -14,6 +14,7 @@ import { trpc } from "@/trpc/client";
 import { useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail";
 
 export const VideosSection = () => {
   return (
@@ -59,9 +60,11 @@ export const VideosSectionSuspense = () => {
                   key={video.id}
                   onClick={() => router.push(`/studio/videos/${video.id}`)}
                 >
-                  <TableCell>{video.title}</TableCell>
+                  <TableCell>
+                    <VideoThumbnail thumbnail={video.muxThumbnail || ""} />
+                  </TableCell>
                   <TableCell>visibility</TableCell>
-                  <TableCell>status</TableCell>
+                  <TableCell>{video.muxStatus || "pending"}</TableCell>
                   <TableCell>date</TableCell>
                   <TableCell>views</TableCell>
                   <TableCell>likes</TableCell>
