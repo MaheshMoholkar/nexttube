@@ -44,6 +44,7 @@ import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
 import Link from "next/link";
 import { env } from "@/env";
 import { snakeCaseToTitle } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 export const FormSection = ({ videoId }: { videoId: string }) => {
   return (
@@ -63,12 +64,23 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
   const utils = trpc.useUtils();
   const [video] = trpc.studio.getOne.useSuspenseQuery({ id: videoId });
   const [categories] = trpc.categories.getMany.useSuspenseQuery();
-
+  const router = useRouter();
   const updateVideo = trpc.videos.update.useMutation({
     onSuccess: () => {
       utils.studio.getOne.invalidate({ id: videoId });
-      utils.categories.getMany.invalidate();
+      utils.studio.getMany.invalidate();
       toast.success("Video updated successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const deleteVideo = trpc.videos.remove.useMutation({
+    onSuccess: () => {
+      utils.studio.getMany.invalidate();
+      toast.success("Video removed");
+      router.push("/studio");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -109,7 +121,10 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => deleteVideo.mutate({ id: videoId })}
+                  disabled={deleteVideo.isPending}
+                >
                   <TrashIcon className="size-4 mr-4" />
                   Delete
                 </DropdownMenuItem>
