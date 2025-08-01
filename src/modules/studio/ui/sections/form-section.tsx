@@ -1,0 +1,60 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { trpc } from "@/trpc/client";
+import { MoreVertical, TrashIcon } from "lucide-react";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+
+export const FormSection = ({ videoId }: { videoId: string }) => {
+  return (
+    <Suspense fallback={<FormSectionSkeleton />}>
+      <ErrorBoundary fallback={<div>Error</div>}>
+        <FormSectionSuspense videoId={videoId} />
+      </ErrorBoundary>
+    </Suspense>
+  );
+};
+
+const FormSectionSkeleton = () => {
+  return <div>Loading...</div>;
+};
+
+export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
+  const [video] = trpc.studio.getOne.useSuspenseQuery({ id: videoId });
+
+  return (
+    <div className="flex items-center justify-between mb-6">
+      <div>
+        <h1 className="text-2xl font-bold">Video Details</h1>
+        <p className="text-xs text-muted-foreground">
+          Manage your video details
+        </p>
+      </div>
+      <div className="flex items-center gap-x-2">
+        <Button type="submit" disabled={false}>
+          Save
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <MoreVertical />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem>
+              <TrashIcon className="size-4 mr-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+};
