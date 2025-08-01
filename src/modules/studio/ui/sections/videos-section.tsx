@@ -15,6 +15,8 @@ import { useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail";
+import { snakeCaseToTitle } from "@/lib/utils";
+import { format } from "date-fns";
 
 export const VideosSection = () => {
   return (
@@ -61,16 +63,34 @@ export const VideosSectionSuspense = () => {
                   onClick={() => router.push(`/studio/videos/${video.id}`)}
                 >
                   <TableCell>
-                    <VideoThumbnail
-                      thumbnail={video.muxThumbnail}
-                      previewUrl={video.previewUrl}
-                      title={video.title}
-                      duration={video.duration || 0}
-                    />
+                    <div className="flex items-center gap-4">
+                      <div className="relative aspect-video w-36 shrink-0">
+                        <VideoThumbnail
+                          thumbnail={video.muxThumbnail}
+                          previewUrl={video.previewUrl}
+                          title={video.title}
+                          duration={video.duration || 0}
+                        />
+                      </div>
+                      <div className="flex flex-col overflow-hidden gap-y-1">
+                        <span className="text-sm line-clamp-1">
+                          {video.title}
+                        </span>
+                        <span className="text-xs text-muted-foreground line-clamp-1">
+                          {video.description || "No description"}
+                        </span>
+                      </div>
+                    </div>
                   </TableCell>
-                  <TableCell>visibility</TableCell>
-                  <TableCell>{video.muxStatus || "pending"}</TableCell>
-                  <TableCell>date</TableCell>
+                  <TableCell>{snakeCaseToTitle(video.visibility)}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      {snakeCaseToTitle(video.muxStatus || "pending")}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {format(new Date(video.createdAt), "MMM d yyyy")}
+                  </TableCell>
                   <TableCell>views</TableCell>
                   <TableCell>likes</TableCell>
                   <TableCell>comments</TableCell>

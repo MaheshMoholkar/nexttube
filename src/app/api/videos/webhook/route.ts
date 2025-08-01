@@ -2,8 +2,10 @@ import { mux } from "@/lib/mux";
 import { env } from "@/env";
 import {
   VideoAssetCreatedWebhookEvent,
+  VideoAssetDeletedWebhookEvent,
   VideoAssetErroredWebhookEvent,
   VideoAssetReadyWebhookEvent,
+  VideoAssetTrackReadyWebhookEvent,
 } from "@mux/mux-node/resources/webhooks.mjs";
 import { headers } from "next/headers";
 import { db } from "@/db";
@@ -13,7 +15,9 @@ import { eq } from "drizzle-orm";
 type WebhookEvent =
   | VideoAssetCreatedWebhookEvent
   | VideoAssetReadyWebhookEvent
-  | VideoAssetErroredWebhookEvent;
+  | VideoAssetErroredWebhookEvent
+  | VideoAssetDeletedWebhookEvent
+  | VideoAssetTrackReadyWebhookEvent;
 
 export const POST = async (request: Request) => {
   const headersPayload = await headers();
@@ -83,6 +87,32 @@ export const POST = async (request: Request) => {
           muxStatus: data.status,
         })
         .where(eq(videos.muxUploadId, data.upload_id));
+      break;
+    }
+    case "video.asset.deleted": {
+      const data = payload.data as VideoAssetDeletedWebhookEvent["data"];
+
+      if (!data.upload_id) return new Response("No upload id", { status: 400 });
+
+      await db.delete(videos).where(eq(videos.muxUploadId, data.upload_id));
+      break;
+    }
+
+    case "video.asset.track.ready": {
+      const data = payload.data as VideoAssetTrackReadyWebhookEvent["data"] & {
+        asset_id: string; // Type is not correct in the Mux SDK
+      };
+
+      const assetId = data.asset_id;
+      const trackId = data.id;
+      const status = data.status;
+      if (!assetId || !trackId)
+        return new Response("No asset id or track id", { status: 400 });
+
+      await db
+        .update(videos)
+        .set({ muxTrackId: trackId, muxTrackStatus: status })
+        .where(eq(videos.muxAssetId, assetId));
       break;
     }
   }

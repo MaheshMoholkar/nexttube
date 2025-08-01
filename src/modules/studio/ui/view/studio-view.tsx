@@ -9,7 +9,7 @@ export const StudioView = () => {
           Manage your channel content and videos
         </p>
       </div>
-      <VideosSection />;
+      <VideosSection />
     </div>
   );
 };
