@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic";
 async function VideoPage({ params }: { params: Promise<{ videoId: string }> }) {
   const { videoId } = await params;
   void trpc.studio.getOne.prefetch({ id: videoId });
+  void trpc.categories.getMany.prefetch();
 
   return (
     <HydrateClient>

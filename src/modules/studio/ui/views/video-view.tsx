@@ -3,7 +3,7 @@ import { FormSection } from "../sections/form-section";
 
 function VideoView({ videoId }: { videoId: string }) {
   return (
-    <div className="px-4 pt-2 5 max-w-screen-lg">
+    <div className="px-4 pt-2">
       <FormSection videoId={videoId} />
     </div>
   );

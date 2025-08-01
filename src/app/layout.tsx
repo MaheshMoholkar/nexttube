@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         <TRPCProvider>
           {children}
-          <Toaster />
+          <Toaster richColors />
         </TRPCProvider>
       </body>
     </html>

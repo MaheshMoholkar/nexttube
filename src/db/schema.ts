@@ -9,6 +9,11 @@ import {
   integer,
   pgEnum,
 } from "drizzle-orm/pg-core";
+import {
+  createInsertSchema,
+  createSelectSchema,
+  createUpdateSchema,
+} from "drizzle-zod";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -118,6 +123,10 @@ export const videos = pgTable("videos", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
 });
+
+export const videoInsertSchema = createInsertSchema(videos);
+export const videoUpdateSchema = createUpdateSchema(videos);
+export const videoSelectSchema = createSelectSchema(videos);
 
 export const videoRelations = relations(videos, ({ one }) => ({
   user: one(user, {

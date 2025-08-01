@@ -15,6 +15,10 @@ export const env = createEnv({
     MUX_TOKEN_SECRET: z.string().min(1),
     MUX_WEBHOOK_SECRET: z.string().min(1),
   },
-  client: {},
-  experimental__runtimeEnv: {},
+  client: {
+    NEXT_PUBLIC_APP_URL: z.url(),
+  },
+  experimental__runtimeEnv: {
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+  },
 });
