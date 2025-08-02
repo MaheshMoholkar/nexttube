@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { and, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
+import { UploadThingError, UTApi } from "uploadthing/server";
 import { z } from "zod";
 
 const f = createUploadthing();
@@ -26,6 +26,34 @@ export const ourFileRouter = {
 
       if (!session?.user.id) throw new UploadThingError("Unauthorized");
 
+      const [video] = await db
+        .select({
+          thumbnailKey: videos.thumbnailKey,
+        })
+        .from(videos)
+        .where(
+          and(eq(videos.id, input.videoId), eq(videos.userId, session.user.id))
+        )
+        .limit(1);
+
+      if (!video) throw new UploadThingError("Video not found");
+
+      if (video.thumbnailKey) {
+        const utapi = new UTApi();
+        const deleted = await utapi.deleteFiles([video.thumbnailKey]);
+        console.log(deleted);
+
+        await db
+          .update(videos)
+          .set({ thumbnailKey: null, muxThumbnail: null })
+          .where(
+            and(
+              eq(videos.id, input.videoId),
+              eq(videos.userId, session.user.id)
+            )
+          );
+      }
+
       return { userId: session.user.id, ...input };
     })
     .onUploadComplete(async ({ metadata, file }) => {
@@ -33,6 +61,7 @@ export const ourFileRouter = {
         .update(videos)
         .set({
           muxThumbnail: file.ufsUrl,
+          thumbnailKey: file.key,
         })
         .where(
           and(
