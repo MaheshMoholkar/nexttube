@@ -73,11 +73,23 @@ export const videosRouter = createTRPCRouter({
           .where(and(eq(videos.id, input.id), eq(videos.userId, userId)));
       }
 
-      const thumbnail = `https://image.mux.com/${video.muxPlaybackId}/thumbnail.jpg`;
+      const tempThumbnail = `https://image.mux.com/${video.muxPlaybackId}/thumbnail.jpg`;
+
+      const utapi = new UTApi();
+      const { data: uploadedThumbnail } =
+        await utapi.uploadFilesFromUrl(tempThumbnail);
+
+      if (!uploadedThumbnail) {
+        return new Response("Failed to upload thumbnail or preview", {
+          status: 500,
+        });
+      }
+
+      const { key: thumbnailKey, ufsUrl: thumbnailUrl } = uploadedThumbnail;
 
       const [updatedVideo] = await db
         .update(videos)
-        .set({ muxThumbnail: thumbnail })
+        .set({ muxThumbnail: thumbnailUrl, thumbnailKey })
         .where(and(eq(videos.id, input.id), eq(videos.userId, userId)))
         .returning();
 
