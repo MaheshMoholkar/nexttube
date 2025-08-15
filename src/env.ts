@@ -15,6 +15,11 @@ export const env = createEnv({
     MUX_TOKEN_SECRET: z.string().min(1),
     MUX_WEBHOOK_SECRET: z.string().min(1),
     UPLOADTHING_TOKEN: z.string().min(1),
+    QSTASH_URL: z.string().min(1),
+    QSTASH_TOKEN: z.string().min(1),
+    QSTASH_CURRENT_SIGNING_KEY: z.string().min(1),
+    QSTASH_NEXT_SIGNING_KEY: z.string().min(1),
+    UPSTASH_WORKFLOW_URL: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.url(),
