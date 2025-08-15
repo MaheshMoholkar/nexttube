@@ -108,7 +108,7 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
     },
   });
 
-  const generateThumbnail = trpc.videos.generateThumbnail.useMutation({
+  const generateTitle = trpc.videos.generateTitle.useMutation({
     onSuccess: () => {
       toast.success("Generating", {
         description: "The thumbnail will be generated in a few minutes",
@@ -241,9 +241,9 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                generateThumbnail.mutate({ id: videoId })
+                                generateTitle.mutate({ id: videoId })
                               }
-                              disabled={generateThumbnail.isPending}
+                              disabled={generateTitle.isPending}
                             >
                               <Sparkles className="size-4 mr-1" /> AI Generated
                             </DropdownMenuItem>

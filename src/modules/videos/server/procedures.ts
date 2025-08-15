@@ -49,7 +49,7 @@ export const videosRouter = createTRPCRouter({
     return { video, url: upload.url };
   }),
 
-  generateThumbnail: protectedProcedure
+  generateTitle: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { userId } = ctx;
