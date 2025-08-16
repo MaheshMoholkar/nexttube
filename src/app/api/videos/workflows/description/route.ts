@@ -8,13 +8,14 @@ interface InputType {
   videoId: string;
 }
 
-const TITLE_SYSTEM_PROMPT = `Your task is to generate an SEO-focused title for a YouTube video based on its transcript. Please follow these guidelines:
-- Be concise but descriptive, using relevant keywords to improve discoverability.
+const TITLE_SYSTEM_PROMPT = `Your task is to generate an SEO-focused description for a YouTube video based on its transcript. Please follow these guidelines:
+- Be concise but descriptive, using relevant keywords.
 - Highlight the most compelling or unique aspect of the video content.
-- Avoid jargon or overly complex language unless it directly supports searchability.
+- Avoid jargon or overly complex language.
 - Use action-oriented phrasing or clear value propositions where applicable.
-- Ensure the title is 3-8 words long and no more than 100 characters.
-- ONLY return the title as plain text. Do not add quotes or any additional formatting. Here is the video transcript: `;
+- Ensure the description is 3-8 words long and no more than 100 characters.
+- Use markdown formatting for the description.
+- ONLY return the description as plain text. Do not add quotes or any additional formatting. Here is the video transcript: `;
 
 export const { POST } = serve(async (context) => {
   const input = context.requestPayload as InputType;
@@ -57,19 +58,23 @@ export const { POST } = serve(async (context) => {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to generate title");
+    throw new Error("Failed to generate description");
   }
 
   const result = await response.json();
-  const generatedTitle = result.response;
+  const generatedDescription = result.response;
 
-  const filteredTitle = generatedTitle.split("\n").pop()?.replace(/['"]/g, "");
+  const filteredDescription = generatedDescription
+    .split("</think>")
+    .pop()
+    ?.replace(/['"]/g, "")
+    .trim();
 
   await context.run("update-video", async () => {
     await db
       .update(videos)
       .set({
-        title: filteredTitle,
+        description: filteredDescription,
       })
       .where(
         and(

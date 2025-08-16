@@ -19,6 +19,7 @@ import {
   Sparkles,
   RotateCcw,
   TrashIcon,
+  Loader2,
 } from "lucide-react";
 import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -118,6 +119,16 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
       toast.error(error.message);
     },
   });
+  const generateDescription = trpc.videos.generateDescription.useMutation({
+    onSuccess: () => {
+      toast.success("Generating", {
+        description: "The description will be generated in a few minutes",
+      });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   const form = useForm<z.infer<typeof videoUpdateSchema>>({
     resolver: zodResolver(videoUpdateSchema),
@@ -177,7 +188,27 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>
+                      <div className="flex items-center gap-x-2">
+                        Title
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          type="button"
+                          className="rounded-full size-6 [&_svg]:size-3"
+                          onClick={() => generateTitle.mutate({ id: videoId })}
+                          disabled={
+                            generateTitle.isPending || !video.muxTrackId
+                          }
+                        >
+                          {generateTitle.isPending ? (
+                            <Loader2 className="animate-spin" />
+                          ) : (
+                            <Sparkles />
+                          )}
+                        </Button>
+                      </div>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -193,7 +224,27 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <div className="flex items-center gap-x-2">
+                      Description
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        type="button"
+                        className="rounded-full size-6 [&_svg]:size-3"
+                        onClick={() =>
+                          generateDescription.mutate({ id: videoId })
+                        }
+                        disabled={
+                          generateDescription.isPending || !video.muxTrackId
+                        }
+                      >
+                        {generateDescription.isPending ? (
+                          <Loader2 className="animate-spin" />
+                        ) : (
+                          <Sparkles />
+                        )}
+                      </Button>
+                    </div>
                     <FormControl>
                       <Textarea
                         {...field}
