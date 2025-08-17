@@ -52,6 +52,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
 import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
+import { ThumbnailGenerateModal } from "../components/thumbnail-generate-modal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const FormSection = ({ videoId }: { videoId: string }) => {
   return (
@@ -64,7 +66,96 @@ export const FormSection = ({ videoId }: { videoId: string }) => {
 };
 
 const FormSectionSkeleton = () => {
-  return <div>Loading...</div>;
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-40" />
+          <Skeleton className="h-4 w-52" />
+        </div>
+        <div className="flex items-center gap-x-2">
+          <Skeleton className="h-10 w-16" />
+          <Skeleton className="h-10 w-10" />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
+        <div className="space-y-8 lg:col-span-3">
+          {/* Title field */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-x-2">
+              <Skeleton className="h-4 w-8" />
+              <Skeleton className="h-6 w-6 rounded-full" />
+            </div>
+            <Skeleton className="h-10 w-full" />
+          </div>
+
+          {/* Description field */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-x-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-6 w-6 rounded-full" />
+            </div>
+            <Skeleton className="h-48 w-full" />
+          </div>
+
+          {/* Thumbnail field */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-[84px] w-[153px]" />
+          </div>
+
+          {/* Category field */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-y-8 lg:col-span-2">
+          {/* Video preview */}
+          <div className="bg-[#F9F9F9] rounded-xl overflow-hidden h-fit">
+            <div className="aspect-video">
+              <Skeleton className="h-full w-full" />
+            </div>
+            <div className="p-4 flex flex-col gap-y-6">
+              {/* Video Link */}
+              <div className="flex justify-between items-center gap-x-2">
+                <div className="flex flex-col gap-y-1 flex-1">
+                  <Skeleton className="h-3 w-16" />
+                  <div className="flex items-center gap-x-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-8 w-8" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Video Status */}
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-y-1">
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+
+              {/* Subtitles Status */}
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-y-1">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-4 w-20" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Visibility field */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-14" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
@@ -73,7 +164,8 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
   const [categories] = trpc.categories.getMany.useSuspenseQuery();
 
   const [thumbnailModalOpen, setThumbnailModalOpen] = useState(false);
-
+  const [thumbnailGenerateModalOpen, setThumbnailGenerateModalOpen] =
+    useState(false);
   const router = useRouter();
 
   const updateVideo = trpc.videos.update.useMutation({
@@ -119,6 +211,7 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
       toast.error(error.message);
     },
   });
+
   const generateDescription = trpc.videos.generateDescription.useMutation({
     onSuccess: () => {
       toast.success("Generating", {
@@ -145,6 +238,11 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
 
   return (
     <>
+      <ThumbnailGenerateModal
+        videoId={videoId}
+        open={thumbnailGenerateModalOpen}
+        onOpenChange={setThumbnailGenerateModalOpen}
+      />
       <ThumbnailUploadModal
         videoId={videoId}
         open={thumbnailModalOpen}
@@ -292,7 +390,7 @@ export const FormSectionSuspense = ({ videoId }: { videoId: string }) => {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                generateTitle.mutate({ id: videoId })
+                                setThumbnailGenerateModalOpen(true)
                               }
                               disabled={generateTitle.isPending}
                             >

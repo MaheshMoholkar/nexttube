@@ -2,23 +2,20 @@ import { serve } from "@upstash/workflow/nextjs";
 import { db } from "@/db";
 import { videos } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import { UTApi } from "uploadthing/server";
 
 interface InputType {
   userId: string;
   videoId: string;
+  prompt: string;
 }
 
-const TITLE_SYSTEM_PROMPT = `Your task is to generate an SEO-focused title for a YouTube video based on its transcript. Please follow these guidelines:
-- Be concise but descriptive, using relevant keywords to improve discoverability.
-- Highlight the most compelling or unique aspect of the video content.
-- Avoid jargon or overly complex language unless it directly supports searchability.
-- Use action-oriented phrasing or clear value propositions where applicable.
-- Ensure the title is 3-8 words long and no more than 100 characters.
-- ONLY return the title as plain text. Do not add quotes or any additional formatting. Here is the video transcript: `;
+const THUMBNAIL_SYSTEM_PROMPT = `You are a thumbnail generator. You will be given a prompt and you will need to generate a thumbnail for a YouTube video. Prompt: `;
 
 export const { POST } = serve(async (context) => {
+  const utapi = new UTApi();
   const input = context.requestPayload as InputType;
-  const { videoId, userId } = input;
+  const { videoId, userId, prompt } = input;
 
   if (!videoId) {
     throw new Error("videoId is required but was not provided");
@@ -45,7 +42,7 @@ export const { POST } = serve(async (context) => {
   });
 
   if (!apiHealthCheck) {
-    console.log("AI API is not available, skipping title generation");
+    console.log("AI API is not available, skipping thumbnail generation");
     return;
   }
 
@@ -59,13 +56,6 @@ export const { POST } = serve(async (context) => {
     return video;
   });
 
-  const transcript = await context.run("get-transcript", async () => {
-    const trackUrl = `https://stream.mux.com/${existingVideo.muxPlaybackId}/text/${existingVideo.muxTrackId}.txt`;
-    const response = await fetch(trackUrl);
-    const text = await response.text();
-    return text;
-  });
-
   const response = await fetch("http://localhost:11434/api/generate", {
     method: "POST",
     headers: {
@@ -73,25 +63,39 @@ export const { POST } = serve(async (context) => {
     },
     body: JSON.stringify({
       model: "deepseek-r1:1.5b",
-      prompt: TITLE_SYSTEM_PROMPT + transcript,
+      prompt: THUMBNAIL_SYSTEM_PROMPT + prompt,
       stream: false,
     }),
   });
 
   if (!response.ok) {
-    throw new Error("Failed to generate title");
+    throw new Error("Failed to generate thumbnail");
   }
 
   const result = await response.json();
-  const generatedTitle = result.response;
 
-  const filteredTitle = generatedTitle.split("\n").pop()?.replace(/['"]/g, "");
+  await context.run("cleanup-thumbnail", async () => {
+    if (existingVideo.thumbnailKey) {
+      await utapi.deleteFiles(existingVideo.thumbnailKey);
+      await db
+        .update(videos)
+        .set({ thumbnailKey: null, muxThumbnail: null })
+        .where(and(eq(videos.id, videoId), eq(videos.userId, userId)));
+    }
+  });
+
+  const uploadedThumbnail = await context.run("upload-thumbnail", async () => {
+    const { data } = await utapi.uploadFiles(result);
+    if (!data) throw new Error("Failed to upload thumbnail");
+    return data;
+  });
 
   await context.run("update-video", async () => {
     await db
       .update(videos)
       .set({
-        title: filteredTitle,
+        thumbnailKey: uploadedThumbnail.key,
+        muxThumbnail: uploadedThumbnail.ufsUrl,
       })
       .where(
         and(

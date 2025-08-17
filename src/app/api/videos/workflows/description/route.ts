@@ -28,6 +28,28 @@ export const { POST } = serve(async (context) => {
     throw new Error("userId is required but was not provided");
   }
 
+  // Check if the AI API is available
+  const apiHealthCheck = await context.run("check-api-health", async () => {
+    try {
+      const healthResponse = await fetch("http://localhost:11434/api/tags", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        signal: AbortSignal.timeout(5000), // 5 second timeout
+      });
+      return healthResponse.ok;
+    } catch (error) {
+      console.warn("AI API is not available:", error);
+      return false;
+    }
+  });
+
+  if (!apiHealthCheck) {
+    console.log("AI API is not available, skipping description generation");
+    return;
+  }
+
   const existingVideo = await context.run("get-video", async () => {
     const [video] = await db
       .select()
