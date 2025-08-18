@@ -16,7 +16,7 @@ export const VideoPlayer = ({
 }: VideoPlayerProps) => {
   return (
     <MuxPlayer
-      playbackId={playbackId || ""}
+      playbackId={playbackId}
       poster={muxThumbnail || THUMBNAIL_FALLBACK}
       playerInitTime={0}
       autoPlay={autoplay}
