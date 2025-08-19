@@ -1,5 +1,11 @@
 import { db } from "@/db";
-import { user, videos, videoUpdateSchema, videoViews } from "@/db/schema";
+import {
+  user,
+  videoReactions,
+  videos,
+  videoUpdateSchema,
+  videoViews,
+} from "@/db/schema";
 import {
   baseProcedure,
   createTRPCRouter,
@@ -16,19 +22,52 @@ import { env } from "@/env";
 export const videosRouter = createTRPCRouter({
   getOne: baseProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const { id } = input;
+      const { userId } = ctx;
+
+      const viewerReactions = db.$with("viewer_reactions").as(
+        db
+          .select({
+            videoId: videoReactions.videoId,
+            type: videoReactions.type,
+          })
+          .from(videoReactions)
+          .where(
+            and(
+              eq(videoReactions.videoId, id),
+              eq(videoReactions.userId, userId)
+            )
+          )
+      );
 
       const [video] = await db
+        .with(viewerReactions)
         .select({
           ...getTableColumns(videos),
           user: {
             ...getTableColumns(user),
           },
           viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
+          likeCount: db.$count(
+            videoReactions,
+            and(
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, "like")
+            )
+          ),
+          dislikeCount: db.$count(
+            videoReactions,
+            and(
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, "dislike")
+            )
+          ),
+          viewerReaction: viewerReactions.type,
         })
         .from(videos)
         .innerJoin(user, eq(videos.userId, user.id))
+        .leftJoin(viewerReactions, eq(viewerReactions.videoId, videos.id))
         .where(eq(videos.id, id));
 
       if (!video) {

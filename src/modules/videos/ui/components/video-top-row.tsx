@@ -33,7 +33,12 @@ function VideoTopRow({ video }: { video: VideoGetOneOutput }) {
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <VideoOwner user={video.user} videoId={video.id} />
         <div className="flex overflow-x-auto sm:min-w-[calc(50%-6px)] sm:justify-end sm:overflow-visible pb-2 -mb-2 sm:pb-0 sm:mb-0 gap-2">
-          <VideoReactions viewerReaction={"like"} />
+          <VideoReactions
+            viewerReaction={video.viewerReaction}
+            likeCount={video.likeCount}
+            dislikeCount={video.dislikeCount}
+            videoId={video.id}
+          />
           <VideoMenu videoId={video.id} variant="secondary" />
         </div>
       </div>
