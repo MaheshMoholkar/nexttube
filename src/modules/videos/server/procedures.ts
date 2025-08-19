@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { user, videos, videoUpdateSchema } from "@/db/schema";
+import { user, videos, videoUpdateSchema, videoViews } from "@/db/schema";
 import {
   baseProcedure,
   createTRPCRouter,
@@ -25,6 +25,7 @@ export const videosRouter = createTRPCRouter({
           user: {
             ...getTableColumns(user),
           },
+          viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
         })
         .from(videos)
         .innerJoin(user, eq(videos.userId, user.id))

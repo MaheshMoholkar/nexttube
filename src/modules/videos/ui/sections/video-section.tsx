@@ -7,6 +7,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { VideoPlayer } from "../components/video-player";
 import VideoBanner from "../components/video-banner";
 import VideoTopRow from "../components/video-top-row";
+import { authClient } from "@/lib/auth-client";
 
 function VideoSection({ videoId }: { videoId: string }) {
   return (
@@ -19,7 +20,22 @@ function VideoSection({ videoId }: { videoId: string }) {
 }
 
 const VideoSectionSuspense = ({ videoId }: { videoId: string }) => {
+  const utils = trpc.useUtils();
   const [video] = trpc.videos.getOne.useSuspenseQuery({ id: videoId });
+
+  const { data: session } = authClient.useSession();
+
+  const createView = trpc.videoViews.create.useMutation({
+    onSuccess: () => {
+      utils.videos.getOne.invalidate({ id: videoId });
+    },
+  });
+
+  const handlePlay = () => {
+    if (!session?.user) return;
+
+    createView.mutate({ videoId });
+  };
 
   return (
     <>
@@ -31,7 +47,7 @@ const VideoSectionSuspense = ({ videoId }: { videoId: string }) => {
       >
         <VideoPlayer
           autoplay
-          onPlay={() => {}}
+          onPlay={handlePlay}
           playbackId={video.muxPlaybackId || ""}
           muxThumbnail={video.muxThumbnail || ""}
         />

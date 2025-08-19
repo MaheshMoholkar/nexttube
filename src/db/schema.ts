@@ -8,6 +8,7 @@ import {
   uuid,
   integer,
   pgEnum,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 import {
   createInsertSchema,
@@ -30,6 +31,14 @@ export const user = pgTable("user", {
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
+
+export const userRelations = relations(user, ({ many }) => ({
+  videos: many(videos),
+  sessions: many(session),
+  accounts: many(account),
+  verification: many(verification),
+  videoViews: many(videoViews),
+}));
 
 export const session = pgTable("session", {
   id: text("id").primaryKey(),
@@ -130,7 +139,7 @@ export const videoInsertSchema = createInsertSchema(videos);
 export const videoUpdateSchema = createUpdateSchema(videos);
 export const videoSelectSchema = createSelectSchema(videos);
 
-export const videoRelations = relations(videos, ({ one }) => ({
+export const videoRelations = relations(videos, ({ one, many }) => ({
   user: one(user, {
     fields: [videos.userId],
     references: [user.id],
@@ -139,4 +148,37 @@ export const videoRelations = relations(videos, ({ one }) => ({
     fields: [videos.categoryId],
     references: [categories.id],
   }),
+  views: many(videoViews),
 }));
+
+export const videoViews = pgTable(
+  "video_views",
+  {
+    videoId: uuid("video_id")
+      .notNull()
+      .references(() => videos.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => [
+    primaryKey({ name: "video_views_pk", columns: [t.videoId, t.userId] }),
+  ]
+);
+
+export const videoViewsRelations = relations(videoViews, ({ one }) => ({
+  video: one(videos, {
+    fields: [videoViews.videoId],
+    references: [videos.id],
+  }),
+  user: one(user, {
+    fields: [videoViews.userId],
+    references: [user.id],
+  }),
+}));
+
+export const videoViewsInsertSchema = createInsertSchema(videoViews);
+export const videoViewsUpdateSchema = createUpdateSchema(videoViews);
+export const videoViewsSelectSchema = createSelectSchema(videoViews);
