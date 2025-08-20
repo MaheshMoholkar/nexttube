@@ -39,6 +39,12 @@ export const userRelations = relations(user, ({ many }) => ({
   verification: many(verification),
   videoViews: many(videoViews),
   videoReactions: many(videoReactions),
+  subscriptions: many(subscriptions, {
+    relationName: "subscriptions_viewer_id_fkey",
+  }),
+  subscribers: many(subscriptions, {
+    relationName: "subscriptions_creator_id_fkey",
+  }),
 }));
 
 export const session = pgTable("session", {
@@ -84,6 +90,43 @@ export const verification = pgTable("verification", {
     () => /* @__PURE__ */ new Date()
   ),
 });
+
+export const subscriptions = pgTable(
+  "subscriptions",
+  {
+    viewerId: text("viewer_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    creatorId: text("creator_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => [
+    primaryKey({
+      name: "subscriptions_pk",
+      columns: [t.viewerId, t.creatorId],
+    }),
+  ]
+);
+
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+  viewer: one(user, {
+    fields: [subscriptions.viewerId],
+    references: [user.id],
+    relationName: "subscriptions_viewer_id_fkey",
+  }),
+  creator: one(user, {
+    fields: [subscriptions.creatorId],
+    references: [user.id],
+    relationName: "subscriptions_creator_id_fkey",
+  }),
+}));
+
+export const subscriptionsInsertSchema = createInsertSchema(subscriptions);
+export const subscriptionsUpdateSchema = createUpdateSchema(subscriptions);
+export const subscriptionsSelectSchema = createSelectSchema(subscriptions);
 
 export const categories = pgTable(
   "categories",

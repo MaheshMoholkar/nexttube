@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
 import React, { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { VideoPlayer } from "../components/video-player";
+import { VideoPlayer, VideoPlayerSkeleton } from "../components/video-player";
 import VideoBanner from "../components/video-banner";
-import VideoTopRow from "../components/video-top-row";
+import VideoTopRow, { VideoTopRowSkeleton } from "../components/video-top-row";
 import { authClient } from "@/lib/auth-client";
 
 function VideoSection({ videoId }: { videoId: string }) {
@@ -59,7 +59,12 @@ const VideoSectionSuspense = ({ videoId }: { videoId: string }) => {
 };
 
 const VideoSectionSkeleton = () => {
-  return <div>VideoSectionSkeleton</div>;
+  return (
+    <>
+      <VideoPlayerSkeleton />
+      <VideoTopRowSkeleton />
+    </>
+  );
 };
 
 export default VideoSection;

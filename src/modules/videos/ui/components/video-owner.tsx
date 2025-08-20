@@ -8,6 +8,7 @@ import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import SubscriptionButton from "@/modules/subscriptions/ui/components/subscription-button";
 import UserInfo from "@/modules/users/ui/components/user-info";
+import useSubscription from "@/modules/subscriptions/hooks/use-subscriptions";
 
 function VideoOwner({
   user,
@@ -16,7 +17,13 @@ function VideoOwner({
   user: VideoGetOneOutput["user"];
   videoId: string;
 }) {
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending: isSessionPending } =
+    authClient.useSession();
+  const { isPending, onClick } = useSubscription({
+    userId: user.id,
+    isSubscribed: user.viewerSubscribed,
+    fromVideoId: videoId,
+  });
 
   return (
     <div className="flex items-center sm:items-center justify-between sm:justify-start gap-3 min-w-0">
@@ -27,7 +34,7 @@ function VideoOwner({
             <UserInfo name={user.name} size="lg" />
 
             <span className="text-sm text-muted-foreground line-clamp-1">
-              {0} subscribers
+              {user.subscriptionCount} subscribers
             </span>
           </div>
         </div>
@@ -38,10 +45,10 @@ function VideoOwner({
         </Button>
       ) : (
         <SubscriptionButton
-          onClick={() => {}}
-          disabled={false}
-          isSubscribed={false}
-          className="flex-non"
+          onClick={onClick}
+          disabled={isPending || isSessionPending}
+          isSubscribed={user.viewerSubscribed}
+          className="flex-none"
         />
       )}
     </div>
