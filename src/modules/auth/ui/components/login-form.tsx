@@ -15,6 +15,11 @@ import React, { useTransition } from "react";
 
 function LoginForm() {
   const [githubPending, startGithubTransition] = useTransition();
+  const [guestPending, startGuestTransition] = useTransition();
+
+  const handleGuestLogin = async () => {
+    startGuestTransition(async () => {});
+  };
 
   const handleGithubLogin = async () => {
     startGithubTransition(async () => {
@@ -73,6 +78,28 @@ function LoginForm() {
             )}
           </Button>
         </div>
+        {/* Guest Login Section */}
+        <div className="relative items-center text-center after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+          <span className="relative z-10 text-sm bg-card px-2 text-muted-foreground">
+            For Recruiters
+          </span>
+        </div>
+
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={handleGuestLogin}
+          disabled={guestPending}
+        >
+          {guestPending ? (
+            <>
+              <Loader className="w-4 h-4 animate-spin" />
+              <span>Setting up guest access...</span>
+            </>
+          ) : (
+            "Continue as Guest"
+          )}
+        </Button>
       </CardContent>
     </Card>
   );
