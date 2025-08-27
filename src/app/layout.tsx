@@ -17,6 +17,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "NextTube",
   description: "NextTube is a video streaming platform",
+  icons: {
+    icon: "/nexttube.svg",
+    shortcut: "/nexttube.svg",
+    apple: "/nexttube.svg",
+  },
 };
 
 export default function RootLayout({

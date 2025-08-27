@@ -30,7 +30,7 @@ function StudioSidebarHeader() {
         <SidebarMenuButton tooltip="Your profile" asChild>
           <Link href="/users/current" className="flex flex-col items-center">
             <UserAvatar
-              imageUrl={session?.user?.image ?? ""}
+              imageUrl={session?.user?.image ?? "/user-placeholder.svg"}
               name={session?.user?.name ?? "User"}
               size="sm"
             />
@@ -44,7 +44,7 @@ function StudioSidebarHeader() {
     <SidebarHeader className="flex flex-col items-center justify-center pb-4">
       <Link href="/users/current">
         <UserAvatar
-          imageUrl={session?.user?.image ?? ""}
+          imageUrl={session?.user?.image ?? "/user-placeholder.svg"}
           name={session?.user?.name ?? "User"}
           className="size-[112px] hover:opacity-80 transition-opacity"
         />

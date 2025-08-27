@@ -29,7 +29,11 @@ function VideoOwner({
     <div className="flex items-center sm:items-center justify-between sm:justify-start gap-3 min-w-0">
       <Link href={`/users/${user.id}`}>
         <div className="flex items-center gap-3 min-w-0">
-          <UserAvatar size="lg" imageUrl={user.image ?? ""} name={user.name} />
+          <UserAvatar
+            size="lg"
+            imageUrl={user.image ?? "/user-placeholder.svg"}
+            name={user.name}
+          />
           <div className="flex flex-col gap-1 min-w-0">
             <UserInfo name={user.name} size="lg" />
 
