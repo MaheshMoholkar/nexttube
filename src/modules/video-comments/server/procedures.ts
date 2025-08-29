@@ -1,11 +1,11 @@
 import { db } from "@/db";
-import { user, videoComments } from "@/db/schema";
+import { commentReactions, user, videoComments } from "@/db/schema";
 import {
   baseProcedure,
   createTRPCRouter,
   protectedProcedure,
 } from "@/trpc/init";
-import { eq, getTableColumns, desc, lt, and, or } from "drizzle-orm";
+import { eq, getTableColumns, desc, lt, and, or, inArray } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
@@ -60,10 +60,22 @@ export const videoCommentsRouter = createTRPCRouter({
         limit: z.number().min(1).max(100),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const { videoId, cursor, limit } = input;
+      const { userId } = ctx;
+
+      const viewerReactions = db.$with("viewer_reactions").as(
+        db
+          .select({
+            commentId: commentReactions.commentId,
+            type: commentReactions.type,
+          })
+          .from(commentReactions)
+          .where(inArray(commentReactions.userId, userId ? [userId] : []))
+      );
 
       const comments = await db
+        .with(viewerReactions)
         .select({
           ...getTableColumns(videoComments),
           user: user,
@@ -71,9 +83,28 @@ export const videoCommentsRouter = createTRPCRouter({
             videoComments,
             eq(videoComments.videoId, videoId)
           ),
+          likeCount: db.$count(
+            commentReactions,
+            and(
+              eq(commentReactions.type, "like"),
+              eq(commentReactions.commentId, videoComments.id)
+            )
+          ),
+          dislikeCount: db.$count(
+            commentReactions,
+            and(
+              eq(commentReactions.type, "dislike"),
+              eq(commentReactions.commentId, videoComments.id)
+            )
+          ),
+          viewerReaction: viewerReactions.type,
         })
         .from(videoComments)
         .leftJoin(user, eq(videoComments.userId, user.id))
+        .leftJoin(
+          viewerReactions,
+          eq(viewerReactions.commentId, videoComments.id)
+        )
         .where(
           and(
             eq(videoComments.videoId, videoId),
