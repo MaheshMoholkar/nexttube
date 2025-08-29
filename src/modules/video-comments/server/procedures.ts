@@ -5,20 +5,54 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "@/trpc/init";
-import { eq, getTableColumns, desc, lt, and, or, inArray } from "drizzle-orm";
+import {
+  eq,
+  getTableColumns,
+  desc,
+  lt,
+  and,
+  or,
+  inArray,
+  isNull,
+  count,
+  isNotNull,
+} from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
 export const videoCommentsRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({ videoId: z.uuid(), content: z.string() }))
+    .input(
+      z.object({
+        videoId: z.uuid(),
+        content: z.string(),
+        parentId: z.uuid().nullish(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
-      const { videoId, content } = input;
+      const { videoId, content, parentId } = input;
       const { userId } = ctx;
+
+      const [existingComment] = await db
+        .select()
+        .from(videoComments)
+        .where(inArray(videoComments.id, parentId ? [parentId] : []));
+
+      if (!existingComment && parentId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+        });
+      }
+
+      if (existingComment?.parentId && parentId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+        });
+      }
 
       const [createdComment] = await db
         .insert(videoComments)
-        .values({ videoId, userId, content })
+        .values({ videoId, userId, content, parentId })
         .returning();
 
       return createdComment;
@@ -51,6 +85,7 @@ export const videoCommentsRouter = createTRPCRouter({
     .input(
       z.object({
         videoId: z.uuid(),
+        parentId: z.uuid().nullish(),
         cursor: z
           .object({
             id: z.uuid(),
@@ -61,7 +96,7 @@ export const videoCommentsRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const { videoId, cursor, limit } = input;
+      const { videoId, parentId, cursor, limit } = input;
       const { userId } = ctx;
 
       const viewerReactions = db.$with("viewer_reactions").as(
@@ -74,8 +109,19 @@ export const videoCommentsRouter = createTRPCRouter({
           .where(inArray(commentReactions.userId, userId ? [userId] : []))
       );
 
+      const replies = db.$with("replies").as(
+        db
+          .select({
+            parentId: videoComments.parentId,
+            count: count(videoComments.id).as("count"),
+          })
+          .from(videoComments)
+          .where(isNotNull(videoComments.parentId))
+          .groupBy(videoComments.parentId)
+      );
+
       const comments = await db
-        .with(viewerReactions)
+        .with(viewerReactions, replies)
         .select({
           ...getTableColumns(videoComments),
           user: user,
@@ -83,6 +129,7 @@ export const videoCommentsRouter = createTRPCRouter({
             videoComments,
             eq(videoComments.videoId, videoId)
           ),
+          repliesCount: replies.count,
           likeCount: db.$count(
             commentReactions,
             and(
@@ -100,14 +147,12 @@ export const videoCommentsRouter = createTRPCRouter({
           viewerReaction: viewerReactions.type,
         })
         .from(videoComments)
-        .leftJoin(user, eq(videoComments.userId, user.id))
-        .leftJoin(
-          viewerReactions,
-          eq(viewerReactions.commentId, videoComments.id)
-        )
         .where(
           and(
             eq(videoComments.videoId, videoId),
+            parentId
+              ? eq(videoComments.parentId, parentId)
+              : isNull(videoComments.parentId),
             cursor
               ? or(
                   lt(videoComments.updatedAt, cursor.updatedAt),
@@ -119,6 +164,12 @@ export const videoCommentsRouter = createTRPCRouter({
               : undefined
           )
         )
+        .innerJoin(user, eq(videoComments.userId, user.id))
+        .leftJoin(
+          viewerReactions,
+          eq(viewerReactions.commentId, videoComments.id)
+        )
+        .leftJoin(replies, eq(videoComments.id, replies.parentId))
         .orderBy(desc(videoComments.updatedAt), desc(videoComments.id))
         .limit(limit + 1);
 

@@ -9,6 +9,7 @@ import {
   integer,
   pgEnum,
   primaryKey,
+  foreignKey,
 } from "drizzle-orm/pg-core";
 import {
   createInsertSchema,
@@ -201,29 +202,52 @@ export const videoRelations = relations(videos, ({ one, many }) => ({
   comments: many(videoComments),
 }));
 
-export const videoComments = pgTable("video_comments", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  videoId: uuid("video_id")
-    .notNull()
-    .references(() => videos.id, { onDelete: "cascade" }),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  content: text("content").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const videoComments = pgTable(
+  "video_comments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    parentId: uuid("parent_id"),
+    videoId: uuid("video_id")
+      .notNull()
+      .references(() => videos.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => [
+    foreignKey({
+      columns: [t.parentId],
+      foreignColumns: [t.id],
+      name: "video_comments_parent_id_fkey",
+    }).onDelete("cascade"),
+  ]
+);
 
-export const videoCommentsRelations = relations(videoComments, ({ one }) => ({
-  video: one(videos, {
-    fields: [videoComments.videoId],
-    references: [videos.id],
-  }),
-  user: one(user, {
-    fields: [videoComments.userId],
-    references: [user.id],
-  }),
-}));
+export const videoCommentsRelations = relations(
+  videoComments,
+  ({ one, many }) => ({
+    video: one(videos, {
+      fields: [videoComments.videoId],
+      references: [videos.id],
+    }),
+    user: one(user, {
+      fields: [videoComments.userId],
+      references: [user.id],
+    }),
+    reactions: many(commentReactions),
+    replies: many(videoComments, {
+      relationName: "video_comments_parent_id_fkey",
+    }),
+    parent: one(videoComments, {
+      fields: [videoComments.parentId],
+      references: [videoComments.id],
+      relationName: "video_comments_parent_id_fkey",
+    }),
+  })
+);
 
 export const videoCommentInsertSchema = createInsertSchema(videoComments);
 export const videoCommentUpdateSchema = createUpdateSchema(videoComments);

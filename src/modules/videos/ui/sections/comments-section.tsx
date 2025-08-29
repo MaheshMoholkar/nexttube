@@ -49,7 +49,11 @@ function CommentsSectionSuspense({ videoId }: { videoId: string }) {
           {comments.pages
             .flatMap((page) => page.items)
             .map((comment) => (
-              <CommentItem key={comment.id} comment={comment} />
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                variant="comment"
+              />
             ))}
           <InfiniteScroll
             hasNextPage={query.hasNextPage}
