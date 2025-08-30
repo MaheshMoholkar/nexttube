@@ -7,7 +7,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { FlameIcon, HomeIcon, PlaySquareIcon } from "lucide-react";
+import { HomeIcon, PlaySquareIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -21,11 +21,6 @@ const items = [
     title: "Subscriptions",
     url: "/feed/subscriptions",
     icon: PlaySquareIcon,
-  },
-  {
-    title: "Trending",
-    url: "/feed/trending",
-    icon: FlameIcon,
   },
 ];
 
