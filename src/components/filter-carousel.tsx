@@ -57,7 +57,28 @@ export const FilterCarousel = ({ value, isLoading, onSelect, data }: Props) => {
           All
         </Badge>
         {isLoading ? (
-          <Skeleton className="h-8 w-24 flex-shrink-0" />
+          <>
+            <Skeleton className="h-8 w-16 flex-shrink-0" />
+            <Skeleton className="h-8 w-20 flex-shrink-0" />
+            <Skeleton className="h-8 w-24 flex-shrink-0" />
+            <Skeleton className="h-8 w-18 flex-shrink-0" />
+            <Skeleton className="h-8 w-22 flex-shrink-0" />
+            <Skeleton className="h-8 w-20 flex-shrink-0" />
+            <Skeleton className="h-8 w-16 flex-shrink-0" />
+            <Skeleton className="h-8 w-24 flex-shrink-0" />
+            <Skeleton className="h-8 w-19 flex-shrink-0" />
+            <Skeleton className="h-8 w-21 flex-shrink-0" />
+            <Skeleton className="h-8 w-17 flex-shrink-0" />
+            <Skeleton className="h-8 w-23 flex-shrink-0" />
+            <Skeleton className="h-8 w-15 flex-shrink-0" />
+            <Skeleton className="h-8 w-25 flex-shrink-0" />
+            <Skeleton className="h-8 w-18 flex-shrink-0" />
+            <Skeleton className="h-8 w-20 flex-shrink-0" />
+            <Skeleton className="h-8 w-22 flex-shrink-0" />
+            <Skeleton className="h-8 w-16 flex-shrink-0" />
+            <Skeleton className="h-8 w-24 flex-shrink-0" />
+            <Skeleton className="h-8 w-19 flex-shrink-0" />
+          </>
         ) : (
           data.map((item) => (
             <Badge

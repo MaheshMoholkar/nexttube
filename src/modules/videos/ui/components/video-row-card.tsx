@@ -48,7 +48,7 @@ export const VideoRowCardSkeleton = ({
 }: VariantProps<typeof videoRowCardVariants>) => {
   return (
     <div className={videoRowCardVariants({ size })}>
-      <div className={videoRowCardVariants({ size })}>
+      <div className={thumbnailVariants({ size })}>
         <VideoThumbnailSkeleton />
       </div>
 
@@ -63,15 +63,20 @@ export const VideoRowCardSkeleton = ({
                 <Skeleton className="h-4 w-[20%] mt-1" />
                 <div className="flex items-center gap-2 my-3">
                   <Skeleton className="size-8 rounded-full" />
-                  <Skeleton className="h-4 24" />
+                  <Skeleton className="h-4 w-24" />
                 </div>
+                <Skeleton className="h-3 w-[60%] mt-2" />
               </>
             )}
             {size === "compact" && (
               <>
                 <Skeleton className="h-4 w-[50%] mt-1" />
+                <Skeleton className="h-3 w-[30%] mt-1" />
               </>
             )}
+          </div>
+          <div className="flex-none">
+            <Skeleton className="size-8 rounded-md" />
           </div>
         </div>
       </div>

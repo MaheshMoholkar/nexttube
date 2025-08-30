@@ -37,12 +37,12 @@ const ResultsSectionSkeleton = () => {
   return (
     <div>
       <div className="hidden flex-col gap-4 md:flex">
-        {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
+        {Array.from({ length: 8 }).map((_, index) => (
           <VideoRowCardSkeleton key={index} />
         ))}
       </div>
       <div className="flex flex-col gap-4 pt-6 md:hidden">
-        {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
+        {Array.from({ length: 8 }).map((_, index) => (
           <VideoGridCardSkeleton key={index} />
         ))}
       </div>

@@ -20,6 +20,9 @@ export const VideoInfoSkeleton = () => {
         <Skeleton className="h-5 w-[90%]" />
         <Skeleton className="h-5 w-[70%]" />
       </div>
+      <div className="flex-shrink-0">
+        <Skeleton className="size-8 rounded-md" />
+      </div>
     </div>
   );
 };
