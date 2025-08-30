@@ -3,6 +3,8 @@ import VideoView from "@/modules/videos/ui/views/video-view";
 import { HydrateClient, trpc } from "@/trpc/server";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 async function VideoPage({ params }: { params: Promise<{ videoId: string }> }) {
   const { videoId } = await params;
 
