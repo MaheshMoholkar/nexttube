@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { VideoPlayer, VideoPlayerSkeleton } from "../components/video-player";
 import VideoBanner from "../components/video-banner";
@@ -22,6 +22,7 @@ function VideoSection({ videoId }: { videoId: string }) {
 const VideoSectionSuspense = ({ videoId }: { videoId: string }) => {
   const utils = trpc.useUtils();
   const [video] = trpc.videos.getOne.useSuspenseQuery({ id: videoId });
+  const [isClient, setIsClient] = useState(false);
 
   const { data: session } = authClient.useSession();
 
@@ -31,11 +32,19 @@ const VideoSectionSuspense = ({ videoId }: { videoId: string }) => {
     },
   });
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const handlePlay = () => {
     if (!session?.user) return;
 
     createView.mutate({ videoId });
   };
+
+  if (!isClient) {
+    return <VideoSectionSkeleton />;
+  }
 
   return (
     <>
