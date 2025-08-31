@@ -10,11 +10,11 @@ interface HomeLayoutProps {
 function HomeLayout({ children }: HomeLayoutProps) {
   return (
     <SidebarProvider>
-      <div className="overflow-hidden">
+      <div className="w-full">
         <HomeNavbar />
-        <div className="flex min-h-screen pt-[4rem] overflow-hidden">
+        <div className="flex min-h-screen pt-[4rem] w-full">
           <HomeSidebar />
-          <main className="flex-1 overflow-y-auto overflow-x-hidden">
+          <main className="flex-1 overflow-y-auto w-full min-w-0 max-w-full">
             {children}
           </main>
         </div>
