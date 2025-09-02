@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { videos } from "@/db/schema";
+import { user, videos } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { and, eq } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -10,6 +10,47 @@ import { z } from "zod";
 const f = createUploadthing();
 
 export const ourFileRouter = {
+  bannerUploader: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 1,
+    },
+  })
+    .middleware(async () => {
+      const session = await auth.api.getSession({ headers: await headers() });
+
+      if (!session?.user.id) throw new UploadThingError("Unauthorized");
+
+      const [existingUser] = await db
+        .select()
+        .from(user)
+        .where(eq(user.id, session.user.id));
+
+      if (!existingUser) throw new UploadThingError("Unauthorized");
+
+      if (existingUser.bannerKey) {
+        const utapi = new UTApi();
+        const deleted = await utapi.deleteFiles([existingUser.bannerKey]);
+        console.log(deleted);
+
+        await db
+          .update(user)
+          .set({ bannerKey: null, bannerUrl: null })
+          .where(eq(user.id, existingUser.id));
+      }
+
+      return { userId: session.user.id };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      await db
+        .update(user)
+        .set({
+          bannerUrl: file.ufsUrl,
+          bannerKey: file.key,
+        })
+        .where(eq(user.id, metadata.userId));
+      return { uploadedBy: metadata.userId };
+    }),
   thumbnailUploader: f({
     image: {
       maxFileSize: "4MB",

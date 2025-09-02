@@ -8,7 +8,8 @@ import z from "zod";
 export const usersRouter = createTRPCRouter({
   getOne: baseProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ ctx }) => {
+    .query(async ({ input, ctx }) => {
+      const { id } = input;
       const { userId } = ctx;
 
       const viewerSubscriptions = db.$with("viewer_subscriptions").as(
@@ -39,7 +40,7 @@ export const usersRouter = createTRPCRouter({
           viewerSubscriptions,
           eq(viewerSubscriptions.creatorId, user.id)
         )
-        .where(eq(user.id, userId));
+        .where(eq(user.id, id));
 
       if (!existingUser) {
         throw new TRPCError({
