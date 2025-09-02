@@ -42,7 +42,7 @@ function StudioSidebarHeader() {
 
   return (
     <SidebarHeader className="flex flex-col items-center justify-center pb-4">
-      <Link href="/users/current">
+      <Link href={`/users/${session?.user?.id}`}>
         <UserAvatar
           imageUrl={session?.user?.image ?? "/user-placeholder.svg"}
           name={session?.user?.name ?? "User"}
