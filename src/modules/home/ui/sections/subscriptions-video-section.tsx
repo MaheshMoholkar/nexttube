@@ -10,18 +10,11 @@ import {
 } from "@/modules/videos/ui/components/video-grid-card";
 import { InfiniteScroll } from "@/components/infinite-scroll";
 
-export const SubscriptionsVideosSection = ({
-  categoryId,
-}: {
-  categoryId?: string;
-}) => {
+export const SubscriptionsVideosSection = () => {
   return (
-    <Suspense
-      key={categoryId}
-      fallback={<SubscriptionsVideosSectionSkeleton />}
-    >
+    <Suspense fallback={<SubscriptionsVideosSectionSkeleton />}>
       <ErrorBoundary fallback={<div>Error</div>}>
-        <SubscriptionsVideosSectionSuspense categoryId={categoryId} />
+        <SubscriptionsVideosSectionSuspense />
       </ErrorBoundary>
     </Suspense>
   );
@@ -37,17 +30,14 @@ const SubscriptionsVideosSectionSkeleton = () => {
   );
 };
 
-export const SubscriptionsVideosSectionSuspense = ({
-  categoryId,
-}: {
-  categoryId?: string;
-}) => {
-  const [videos, query] = trpc.videos.getMany.useSuspenseInfiniteQuery(
-    { categoryId, limit: DEFAULT_LIMIT },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    }
-  );
+export const SubscriptionsVideosSectionSuspense = () => {
+  const [videos, query] =
+    trpc.videos.getManySubscribed.useSuspenseInfiniteQuery(
+      { limit: DEFAULT_LIMIT },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+      }
+    );
 
   return (
     <div className="w-full">

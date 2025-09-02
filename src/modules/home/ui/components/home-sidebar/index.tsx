@@ -3,6 +3,7 @@ import React from "react";
 import MainSection from "./main-section";
 import { Separator } from "@/components/ui/separator";
 import PersonalSection from "./personal-section";
+import SubscriptionsSection from "./subscriptions-section";
 
 function HomeSidebar() {
   return (
@@ -11,6 +12,8 @@ function HomeSidebar() {
         <MainSection />
         <Separator />
         <PersonalSection />
+        <Separator />
+        <SubscriptionsSection />
       </SidebarContent>
     </Sidebar>
   );
