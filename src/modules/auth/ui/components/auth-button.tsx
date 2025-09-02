@@ -1,7 +1,13 @@
 "use client";
 
 import { buttonVariants } from "@/components/ui/button";
-import { UserCircle2Icon, LogOutIcon, HomeIcon, VideoIcon } from "lucide-react";
+import {
+  UserCircle2Icon,
+  LogOutIcon,
+  HomeIcon,
+  Clapperboard,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { authClient } from "@/lib/auth-client";
@@ -64,13 +70,18 @@ function AuthButton() {
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
+          <Link href={`/users/${user?.id}`}>
+            <User className="size-4 mr-2" /> My Profile
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/">
             <HomeIcon className="size-4 mr-2" /> Home
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/studio">
-            <VideoIcon className="size-4 mr-2" /> Studio
+            <Clapperboard className="size-4 mr-2" /> Studio
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
