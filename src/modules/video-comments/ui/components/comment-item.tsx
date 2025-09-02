@@ -75,7 +75,7 @@ function CommentItem({ comment, variant }: CommentItemProps) {
   return (
     <div>
       <div className="flex gap-4">
-        <Link href={`/users/${comment.user?.id}`}>
+        <Link prefetch href={`/users/${comment.user?.id}`}>
           <UserAvatar
             size={variant === "comment" ? "lg" : "sm"}
             imageUrl={comment.user?.image ?? "/user-placeholder.svg"}
@@ -83,7 +83,7 @@ function CommentItem({ comment, variant }: CommentItemProps) {
           />
         </Link>
         <div className="flex-1 min-w-0">
-          <Link href={`/users/${comment.user?.id}`}>
+          <Link prefetch href={`/users/${comment.user?.id}`}>
             <div className="flex items-center gap-2 text-sm">
               <span className="font-medium">
                 {comment.user?.name ?? "User"}

@@ -31,6 +31,7 @@ function AuthButton() {
   if (!session) {
     return (
       <Link
+        prefetch
         href="/login"
         className={buttonVariants({
           variant: "outline",
@@ -70,17 +71,17 @@ function AuthButton() {
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href={`/users/${user?.id}`}>
+          <Link prefetch href={`/users/${user?.id}`}>
             <User className="size-4 mr-2" /> My Profile
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/">
+          <Link prefetch href="/">
             <HomeIcon className="size-4 mr-2" /> Home
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/studio">
+          <Link prefetch href="/studio">
             <Clapperboard className="size-4 mr-2" /> Studio
           </Link>
         </DropdownMenuItem>

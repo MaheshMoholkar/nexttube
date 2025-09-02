@@ -28,7 +28,11 @@ function StudioSidebarHeader() {
     return (
       <SidebarHeader className="flex items-center justify-center">
         <SidebarMenuButton tooltip="Your profile" asChild>
-          <Link href="/users/current" className="flex flex-col items-center">
+          <Link
+            prefetch
+            href="/users/current"
+            className="flex flex-col items-center"
+          >
             <UserAvatar
               imageUrl={session?.user?.image ?? "/user-placeholder.svg"}
               name={session?.user?.name ?? "User"}
@@ -42,7 +46,7 @@ function StudioSidebarHeader() {
 
   return (
     <SidebarHeader className="flex flex-col items-center justify-center pb-4">
-      <Link href={`/users/${session?.user?.id}`}>
+      <Link prefetch href={`/users/${session?.user?.id}`}>
         <UserAvatar
           imageUrl={session?.user?.image ?? "/user-placeholder.svg"}
           name={session?.user?.name ?? "User"}

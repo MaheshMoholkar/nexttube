@@ -27,7 +27,7 @@ function VideoOwner({
 
   return (
     <div className="flex items-center sm:items-center justify-between sm:justify-start gap-3 min-w-0">
-      <Link href={`/users/${user.id}`}>
+      <Link prefetch href={`/users/${user.id}`}>
         <div className="flex items-center gap-3 min-w-0">
           <UserAvatar
             size="lg"
@@ -45,7 +45,9 @@ function VideoOwner({
       </Link>
       {session?.user.id === user.id ? (
         <Button variant="secondary" className="rounded-full" asChild>
-          <Link href={`/studio/videos/${videoId}`}>Edit Video</Link>
+          <Link prefetch href={`/studio/videos/${videoId}`}>
+            Edit Video
+          </Link>
         </Button>
       ) : (
         <SubscriptionButton

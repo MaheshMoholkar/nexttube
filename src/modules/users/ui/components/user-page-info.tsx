@@ -40,7 +40,9 @@ function UserPageInfo({ user }: { user: UserGetOneOutput }) {
             asChild
             className="w-full mt-3 rounded-full"
           >
-            <Link href={`/studio`}>Go to Studio</Link>
+            <Link prefetch href={`/studio`}>
+              Go to Studio
+            </Link>
           </Button>
         ) : (
           <SubscriptionButton
@@ -68,7 +70,9 @@ function UserPageInfo({ user }: { user: UserGetOneOutput }) {
         </div>
         {session?.user?.id === user.id ? (
           <Button variant="secondary" asChild className="mt-3 rounded-full">
-            <Link href={`/studio`}>Go to Studio</Link>
+            <Link prefetch href={`/studio`}>
+              Go to Studio
+            </Link>
           </Button>
         ) : (
           <SubscriptionButton

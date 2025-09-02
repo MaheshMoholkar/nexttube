@@ -11,6 +11,7 @@ export default function AuthLayout({
   return (
     <div className="relative flex min-h-svh flex-col items-center justify-center">
       <Link
+        prefetch
         href="/"
         className={buttonVariants({
           variant: "outline",
@@ -21,6 +22,7 @@ export default function AuthLayout({
       </Link>
       <div className="flex w-full max-w-sm flex-col gap-6">
         <Link
+          prefetch
           href="/"
           className="flex items-center justify-center gap-2 self-center font-medium"
         >

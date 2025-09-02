@@ -11,8 +11,8 @@ function HomeNavbar() {
       <div className="flex items-center gap-4 w-full">
         {/* Menu & Logo */}
         <div className="flex items-center flex-shrink-0">
-          <SidebarTrigger></SidebarTrigger>
-          <Link href="/">
+          <SidebarTrigger />
+          <Link prefetch href="/" className="hidden md:block">
             <div className="p-4 flex items-center gap-1">
               <Image
                 src="/nexttube.svg"
