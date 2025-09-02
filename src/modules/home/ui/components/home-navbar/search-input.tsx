@@ -4,9 +4,21 @@ import { Button } from "@/components/ui/button";
 import { env } from "@/env";
 import { SearchIcon, XIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 
 function SearchInput() {
+  return (
+    <Suspense
+      fallback={
+        <div className="w-full max-w-[600px] h-10 bg-gray-100 rounded-full animate-pulse" />
+      }
+    >
+      <SearchInputSuspense />
+    </Suspense>
+  );
+}
+
+function SearchInputSuspense() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
