@@ -10,5 +10,10 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/studio/:path*"],
+  matcher: [
+    "/studio/:path*",
+    "/subscriptions",
+    "/feed/subscriptions",
+    "/playlists/:path*",
+  ],
 };
