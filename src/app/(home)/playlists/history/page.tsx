@@ -1,7 +1,17 @@
+import { DEFAULT_LIMIT } from "@/constants";
+import { HistoryView } from "@/modules/playlists/ui/views/history-view";
+import { HydrateClient, trpc } from "@/trpc/server";
 import React from "react";
 
 function Page() {
-  return <div>History</div>;
+  void trpc.playlists.getHistory.prefetchInfinite({
+    limit: DEFAULT_LIMIT,
+  });
+  return (
+    <HydrateClient>
+      <HistoryView />
+    </HydrateClient>
+  );
 }
 
 export default Page;
