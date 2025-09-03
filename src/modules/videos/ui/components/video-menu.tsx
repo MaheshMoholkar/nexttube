@@ -12,8 +12,9 @@ import {
   ShareIcon,
   Trash2Icon,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
+import { PlaylistAddModal } from "@/modules/playlists/ui/components/playlist-add-modal";
 
 function VideoMenu({
   videoId,
@@ -24,35 +25,44 @@ function VideoMenu({
   variant?: "ghost" | "secondary";
   onRemove?: () => void;
 }) {
+  const [open, setOpen] = useState(false);
+
   const onShare = () => {
     const url = `${env.NEXT_PUBLIC_APP_URL}/videos/${videoId}`;
     navigator.clipboard.writeText(url);
     toast("Copied to clipboard");
   };
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant={variant} className="rounded-full" size="icon">
-          <MoreVertical />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-        <DropdownMenuItem onClick={onShare}>
-          <ShareIcon className="size-4 mr-2" />
-          Share
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {}}>
-          <ListPlusIcon className="size-4 mr-2" />
-          Add to Playlist
-        </DropdownMenuItem>
-        {onRemove && (
-          <DropdownMenuItem onClick={() => {}}>
-            <Trash2Icon className="size-4 mr-2" />
-            Remove
+    <>
+      <PlaylistAddModal open={open} onOpenChange={setOpen} videoId={videoId} />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant={variant} className="rounded-full" size="icon">
+            <MoreVertical />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+          <DropdownMenuItem onClick={onShare}>
+            <ShareIcon className="size-4 mr-2" />
+            Share
           </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <DropdownMenuItem
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            <ListPlusIcon className="size-4 mr-2" />
+            Add to Playlist
+          </DropdownMenuItem>
+          {onRemove && (
+            <DropdownMenuItem onClick={() => {}}>
+              <Trash2Icon className="size-4 mr-2" />
+              Remove
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 }
 
