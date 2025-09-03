@@ -45,7 +45,7 @@ interface VideoRowCardProps extends VariantProps<typeof videoRowCardVariants> {
 }
 
 export const VideoRowCardSkeleton = ({
-  size,
+  size = "default",
 }: VariantProps<typeof videoRowCardVariants>) => {
   return (
     <div className={videoRowCardVariants({ size })}>
@@ -56,9 +56,6 @@ export const VideoRowCardSkeleton = ({
       <div className="flex-1 min-w-0">
         <div className="flex justify-between gap-x-2">
           <div className="flex-1 min-w-0">
-            <Skeleton
-              className={cn("h-5 w-[40%]", size === "compact" && "h-4 w-[40%]")}
-            />
             {size === "default" && (
               <>
                 <Skeleton className="h-4 w-[20%] mt-1" />
@@ -71,13 +68,14 @@ export const VideoRowCardSkeleton = ({
             )}
             {size === "compact" && (
               <>
-                <Skeleton className="h-4 w-[50%] mt-1" />
-                <Skeleton className="h-3 w-[30%] mt-1" />
+                <Skeleton className="h-4 w-[60%] mt-1" />
+                <Skeleton className="h-3 w-[10%] mt-1" />
+                <Skeleton className="h-3 w-[15%] mt-1" />
               </>
             )}
           </div>
           <div className="flex-none">
-            <Skeleton className="size-8 rounded-md" />
+            <Skeleton className="w-2 h-6 rounded-md" />
           </div>
         </div>
       </div>
