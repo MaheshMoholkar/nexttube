@@ -12,13 +12,31 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
 import React, { useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 function LoginForm() {
+  const router = useRouter();
   const [githubPending, startGithubTransition] = useTransition();
   const [guestPending, startGuestTransition] = useTransition();
 
-  const handleGuestLogin = async () => {
-    startGuestTransition(async () => {});
+  const handleGuestLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    startGuestTransition(async () => {
+      await authClient.signIn.email({
+        email: "johndoe@gmail.com",
+        password: "123456789",
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success("Signed in successfully, you will be redirected...");
+            router.push("/");
+          },
+          onError: (error) => {
+            toast.error(error.error.message || "Invalid credentials");
+          },
+        },
+      });
+    });
   };
 
   const handleGithubLogin = async () => {
@@ -77,29 +95,30 @@ function LoginForm() {
               </>
             )}
           </Button>
-        </div>
-        {/* Guest Login Section */}
-        <div className="relative items-center text-center after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-          <span className="relative z-10 text-sm bg-card px-2 text-muted-foreground">
-            For Recruiters
-          </span>
-        </div>
 
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={handleGuestLogin}
-          disabled={guestPending}
-        >
-          {guestPending ? (
-            <>
-              <Loader className="w-4 h-4 animate-spin" />
-              <span>Setting up guest access...</span>
-            </>
-          ) : (
-            "Continue as Guest"
-          )}
-        </Button>
+          {/* Guest Login Section */}
+          <div className="relative items-center text-center after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+            <span className="relative z-10 text-sm bg-card px-2 text-muted-foreground">
+              Guest Access
+            </span>
+          </div>
+
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={handleGuestLogin}
+            disabled={guestPending}
+          >
+            {guestPending ? (
+              <>
+                <Loader className="w-4 h-4 animate-spin" />
+                <span>Setting up guest access...</span>
+              </>
+            ) : (
+              "Continue as Guest"
+            )}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
