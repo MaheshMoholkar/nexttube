@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import { HomeIcon, PlaySquareIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 const items = [
@@ -25,6 +26,7 @@ const items = [
 ];
 
 function MainSection() {
+  const pathname = usePathname();
   return (
     <SidebarGroup>
       <SidebarGroupContent>
@@ -34,7 +36,7 @@ function MainSection() {
               <SidebarMenuButton
                 tooltip={item.title}
                 asChild
-                isActive={false}
+                isActive={pathname === item.url}
                 onClick={() => {}}
               >
                 <Link

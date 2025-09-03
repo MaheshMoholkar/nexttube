@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { HistoryIcon, ListVideoIcon, ThumbsUpIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 const items = [
@@ -31,6 +32,7 @@ const items = [
 ];
 
 function PersonalSection() {
+  const pathname = usePathname();
   return (
     <SidebarGroup>
       <SidebarGroupLabel>You</SidebarGroupLabel>
@@ -41,7 +43,7 @@ function PersonalSection() {
               <SidebarMenuButton
                 tooltip={item.title}
                 asChild
-                isActive={false}
+                isActive={pathname === item.url}
                 onClick={() => {}}
               >
                 <Link
