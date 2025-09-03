@@ -53,8 +53,8 @@ const VideoSectionSkeleton = () => {
                   <div className="flex items-center gap-4">
                     <Skeleton className="h-20 w-36" />
                     <div className="flex flex-col gap-2">
-                      <Skeleton className="h-4 w-[70px]" />
-                      <Skeleton className="h-3 w-[100px]" />
+                      <Skeleton className="h-4 w-72" />
+                      <Skeleton className="h-3 w-64" />
                     </div>
                   </div>
                 </TableCell>
@@ -68,13 +68,13 @@ const VideoSectionSkeleton = () => {
                   <Skeleton className="h-4 w-20" />
                 </TableCell>
                 <TableCell className="text-right">
-                  <Skeleton className="h-4 w-20 ml-auto" />
+                  <Skeleton className="h-4 w-8" />
                 </TableCell>
                 <TableCell className="text-right">
-                  <Skeleton className="h-4 w-20 ml-auto" />
+                  <Skeleton className="h-4 w-8" />
                 </TableCell>
-                <TableCell className="text-right pr-6">
-                  <Skeleton className="h-4 w-20 ml-auto" />
+                <TableCell className="text-center pr-6">
+                  <Skeleton className="h-4 w-8 mx-auto" />
                 </TableCell>
               </TableRow>
             ))}
@@ -107,7 +107,7 @@ export const VideosSectionSuspense = () => {
               <TableHead>Date</TableHead>
               <TableHead className="text-right">Views</TableHead>
               <TableHead className="text-right">Likes</TableHead>
-              <TableHead className="text-right pr-6">Comments</TableHead>
+              <TableHead className="text-center pr-6">Comments</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -159,10 +159,14 @@ export const VideosSectionSuspense = () => {
                   <TableCell>
                     {format(new Date(video.createdAt), "MMM d yyyy")}
                   </TableCell>
-                  <TableCell className="text-right text-sm">views</TableCell>
-                  <TableCell className="text-right text-sm">likes</TableCell>
-                  <TableCell className="text-right text-sm pr-6">
-                    comments
+                  <TableCell className="text-right text-sm">
+                    {video.viewCount}
+                  </TableCell>
+                  <TableCell className="text-right text-sm">
+                    {video.likeCount}
+                  </TableCell>
+                  <TableCell className="text-center text-sm pr-6">
+                    {video.commentCount}
                   </TableCell>
                 </TableRow>
               ))}
