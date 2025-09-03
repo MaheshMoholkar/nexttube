@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import SubscriptionButton from "@/modules/subscriptions/ui/components/subscription-button";
 import UserInfo from "@/modules/users/ui/components/user-info";
 import useSubscription from "@/modules/subscriptions/hooks/use-subscriptions";
+import { USER_FALLBACK } from "@/constants";
 
 function VideoOwner({
   user,
@@ -31,7 +32,7 @@ function VideoOwner({
         <div className="flex items-center gap-3 min-w-0">
           <UserAvatar
             size="lg"
-            imageUrl={user.image ?? "/user-placeholder.svg"}
+            imageUrl={user.image ?? USER_FALLBACK}
             name={user.name}
           />
           <div className="flex flex-col gap-1 min-w-0">

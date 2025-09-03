@@ -8,6 +8,7 @@ import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { USER_FALLBACK } from "@/constants";
 
 function StudioSidebarHeader() {
   const { data: session, isPending } = authClient.useSession();
@@ -34,7 +35,7 @@ function StudioSidebarHeader() {
             className="flex flex-col items-center"
           >
             <UserAvatar
-              imageUrl={session?.user?.image ?? "/user-placeholder.svg"}
+              imageUrl={session?.user?.image ?? USER_FALLBACK}
               name={session?.user?.name ?? "User"}
               size="sm"
             />
@@ -48,7 +49,7 @@ function StudioSidebarHeader() {
     <SidebarHeader className="flex flex-col items-center justify-center pb-4">
       <Link prefetch href={`/users/${session?.user?.id}`}>
         <UserAvatar
-          imageUrl={session?.user?.image ?? "/user-placeholder.svg"}
+          imageUrl={session?.user?.image ?? USER_FALLBACK}
           name={session?.user?.name ?? "User"}
           className="size-[112px] hover:opacity-80 transition-opacity"
         />

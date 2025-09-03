@@ -6,6 +6,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import UserInfo from "@/modules/users/ui/components/user-info";
 import VideoMenu from "./video-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { USER_FALLBACK } from "@/constants";
 
 interface VideoInfoProps {
   data: VideoGetManyOutput["items"][number];
@@ -42,7 +43,7 @@ export const VideoInfo = ({ data, onRemove }: VideoInfoProps) => {
     <div className="flex gap-3">
       <Link prefetch href={`/users/${data.user.id}`}>
         <UserAvatar
-          imageUrl={data.user.image ?? "/user-placeholder.svg"}
+          imageUrl={data.user.image ?? USER_FALLBACK}
           name={data.user.name}
         />
       </Link>

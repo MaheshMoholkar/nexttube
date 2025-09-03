@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { UserAvatar } from "@/components/user-avatar";
+import { USER_FALLBACK } from "@/constants";
 import { videoCommentInsertSchema } from "@/db/schema";
 import { authClient } from "@/lib/auth-client";
 import { trpc } from "@/trpc/client";
@@ -85,7 +86,7 @@ function CommentForm({
       >
         <UserAvatar
           size="lg"
-          imageUrl={session?.user.image ?? "/user-placeholder.svg"}
+          imageUrl={session?.user.image ?? USER_FALLBACK}
           name={session?.user.name ?? "User"}
         />
         <div className="flex-1">

@@ -9,7 +9,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { UserAvatar } from "@/components/user-avatar";
-import { DEFAULT_LIMIT } from "@/constants";
+import { DEFAULT_LIMIT, USER_FALLBACK } from "@/constants";
 import { trpc } from "@/trpc/client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -70,7 +70,7 @@ function SubscriptionsSection() {
                     >
                       <UserAvatar
                         size="xs"
-                        imageUrl={subscription.user.image ?? "/placeholder.svg"}
+                        imageUrl={subscription.user.image ?? USER_FALLBACK}
                         name={subscription.user.name}
                       />
                       <span className="text-sm">{subscription.user.name}</span>

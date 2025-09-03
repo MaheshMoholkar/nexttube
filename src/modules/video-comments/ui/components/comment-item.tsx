@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import CommentForm from "./comment-form";
 import CommentReplies from "./comment-replies";
+import { USER_FALLBACK } from "@/constants";
 
 interface CommentItemProps {
   comment: VideoCommentsGetManyOutput["items"][number];
@@ -78,7 +79,7 @@ function CommentItem({ comment, variant }: CommentItemProps) {
         <Link prefetch href={`/users/${comment.user?.id}`}>
           <UserAvatar
             size={variant === "comment" ? "lg" : "sm"}
-            imageUrl={comment.user?.image ?? "/user-placeholder.svg"}
+            imageUrl={comment.user?.image ?? USER_FALLBACK}
             name={comment.user?.name ?? "User"}
           />
         </Link>

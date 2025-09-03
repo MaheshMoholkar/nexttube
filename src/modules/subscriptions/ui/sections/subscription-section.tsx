@@ -1,7 +1,7 @@
 "use client";
 
 import { InfiniteScroll } from "@/components/infinite-scroll";
-import { DEFAULT_LIMIT } from "@/constants";
+import { DEFAULT_LIMIT, USER_FALLBACK } from "@/constants";
 import { trpc } from "@/trpc/client";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -58,7 +58,7 @@ const SubscriptionSectionSuspense = () => {
             >
               <SubscriptionItem
                 name={subscription.user.name}
-                imageUrl={subscription.user.image ?? "/placeholder.svg"}
+                imageUrl={subscription.user.image ?? USER_FALLBACK}
                 subscriberCount={subscription.user.subscriptionCount}
                 onUnsubscribe={() =>
                   unsubscribe.mutate({ userId: subscription.creatorId })

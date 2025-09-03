@@ -1,5 +1,5 @@
+import { THUMBNAIL_FALLBACK } from "@/constants";
 import MuxPlayer from "@mux/mux-player-react";
-import { THUMBNAIL_FALLBACK } from "../../constants";
 
 interface VideoPlayerProps {
   playbackId?: string;

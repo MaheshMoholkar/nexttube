@@ -13,6 +13,7 @@ import {
 import VideoMenu from "./video-menu";
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { USER_FALLBACK } from "@/constants";
 
 const videoRowCardVariants = cva("group flex min-w-0", {
   variants: {
@@ -136,7 +137,7 @@ export function VideoRowCard({
                 <div className="flex items-center gap-2 my-3">
                   <UserAvatar
                     size="sm"
-                    imageUrl={data.user.image ?? "/user-placeholder.svg"}
+                    imageUrl={data.user.image ?? USER_FALLBACK}
                     name={data.user.name}
                   />
                   <UserInfo size="sm" name={data.user.name} />
